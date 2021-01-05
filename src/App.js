@@ -1,5 +1,6 @@
 import logo from './logo.svg';
 import './App.css';
+import {useState} from "react";
 
 function App() {
     const style = {
@@ -8,20 +9,31 @@ function App() {
         fontSize : 30
     }
 
-    function myFunction() {
+    const [inputs, setInputs] = useState({
+        height : 300,
+        width : 300,
+        link : '',
+        content : '',
+    });
 
-        const height = document.getElementById("height").value;
-        const width = document.getElementById("width").value;
+    const {height, width, link, content} = inputs;
+
+    const onChange = (e) => {
+        const {value, name} = e.target;
+        setInputs({
+            ...inputs,
+            [name] : value,
+        });
+    };
+
+    function myFunction() {
         const s = `<p align="center">\n<img width="${width}" height="${height}" src="`;
         const s2 = '">\n</p>';
-        const link=document.getElementById("link").value;
-        document.getElementById("result").value = s + link + s2;
-
+        return s + link + s2;
     }
 
     function removeNew() {
-        const content = document.getElementById("content").value;
-        document.getElementById("newContent").textContent = content.replace(/\n\n/g, '\n');
+        return content.replace(/\n\n/g, '\n');
     }
 
     function copyText(){
@@ -31,10 +43,12 @@ function App() {
     }
 
     function selectText(){
-        const textField = document.getElementById('link');
         navigator.clipboard.readText()
             .then((text) => {
-                textField.value = text;
+                setInputs({
+                    ...inputs,
+                    link: text,
+                });
                 console.log('Async readText successful, "' + text + '" written');
             })
             .catch((err) => console.log('Async readText failed with error: "' + err + '"'));
@@ -42,23 +56,27 @@ function App() {
     }
 
     async function addNewLine(e){
-        const textField = document.getElementById('content');
-        textField.value += '\n';
         navigator.clipboard.readText()
             .then((text) => {
-                textField.value += text;
+                setInputs({
+                    ...inputs,
+                    content: content + '\n' + text,
+                });
                 console.log('Async readText successful, "' + text + '" written');
             })
             .catch((err) => console.log('Async readText failed with error: "' + err + '"'));
         removeNew();
-        textField.focus();
+        document.getElementById('content').focus();
     }
 
 
     const clearText = () => {
-        const textField = document.getElementById('content');
-        textField.value = "";
-        textField.focus();
+        setInputs({
+                ...inputs,
+                content : '',
+            }
+        );
+        document.getElementById('content').focus();
     }
 
 
@@ -67,15 +85,15 @@ function App() {
     <body>
     <h1>picture markdown generator</h1>
     <label for="link">link:</label>
-    <input type = "text" id="link" name="link" style={{width:200}} onChange={myFunction}/>
+    <input type = "text" id="link" name="link" style={{width:200}} value={link} onChange={onChange}/>
     <button onClick={selectText}>paste</button>
     <label for="height">height:</label>
-    <input type = "text" id="height" name="height" value="300" onChange={myFunction}/>
+    <input type = "text" id="height" name="height" value={height} onChange={onChange}/>
     <label for="width">width:</label>
-    <input type = "text" id="width" name="width" value="300" onChange={myFunction}/>
+    <input type = "text" id="width" name="width" value={width} onChange={onChange}/>
     <br />
     <br />
-    <textarea id = "result" rows = "6" cols="50" onChange={myFunction}></textarea>
+    <textarea id = "result" rows = "6" cols="50" value={myFunction()}></textarea>
     <button onClick={copyText} style={style}>copy</button>
 
     <br />
@@ -90,8 +108,8 @@ function App() {
     <br />
 
 
-    <textarea id = "content" rows = "40" cols="50" onChange={removeNew}></textarea>
-    <textarea id = "newContent" rows = "40" cols="50" onChange={removeNew}></textarea>
+    <textarea id = "content" name="content" rows = "40" cols="50" onChange={onChange} value={content}></textarea>
+    <textarea id = "newContent" rows = "40" cols="50" value={removeNew()}></textarea>
     <br />
 
     </body>
