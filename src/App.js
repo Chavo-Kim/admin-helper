@@ -2,7 +2,14 @@ import logo from './logo.svg';
 import './App.css';
 
 function App() {
+    const style = {
+        width : 200,
+        height : 70,
+        fontSize : 30
+    }
+
     function myFunction() {
+
         const height = document.getElementById("height").value;
         const width = document.getElementById("width").value;
         const s = `<p align="center">\n<img width="${width}" height="${height}" src="`;
@@ -31,7 +38,7 @@ function App() {
                 console.log('Async readText successful, "' + text + '" written');
             })
             .catch((err) => console.log('Async readText failed with error: "' + err + '"'));
-        textField.focus();
+        myFunction();
     }
 
     async function addNewLine(e){
@@ -43,20 +50,25 @@ function App() {
                 console.log('Async readText successful, "' + text + '" written');
             })
             .catch((err) => console.log('Async readText failed with error: "' + err + '"'));
+        removeNew();
         textField.focus();
     }
 
 
-    async function pleaseLetMeNotify() {
-        return await navigator.permissions.request({name: 'clipboard-read'});
+    const clearText = () => {
+        const textField = document.getElementById('content');
+        textField.value = "";
+        textField.focus();
     }
+
+
 
   return (
     <body>
     <h1>picture markdown generator</h1>
     <label for="link">link:</label>
     <input type = "text" id="link" name="link" style={{width:200}} onChange={myFunction}/>
-    <button onClick={selectText}>select</button>
+    <button onClick={selectText}>paste</button>
     <label for="height">height:</label>
     <input type = "text" id="height" name="height" value="300" onChange={myFunction}/>
     <label for="width">width:</label>
@@ -64,17 +76,23 @@ function App() {
     <br />
     <br />
     <textarea id = "result" rows = "6" cols="50" onChange={myFunction}></textarea>
-    <button onClick={copyText} style={{width:100}}>copy</button>
+    <button onClick={copyText} style={style}>copy</button>
 
     <br />
     <br />
 
     <h1>unnecessary newline remover</h1>
+    <div style={{width:1000}}>
+        <button onClick={addNewLine} style={style}>paste</button>
+        <button onClick={clearText} style={style}>clear</button>
+    </div>
+
+    <br />
+
 
     <textarea id = "content" rows = "40" cols="50" onChange={removeNew}></textarea>
     <textarea id = "newContent" rows = "40" cols="50" onChange={removeNew}></textarea>
     <br />
-    <button onClick={addNewLine} style={{width:100}}>copy</button>
 
     </body>
   );
